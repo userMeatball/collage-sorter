@@ -1,6 +1,3 @@
-#CONTOUR APPROXIMATION
-#turn imperfect contours to more basic
-
 ##App flow
 ###automatic scanner
 add img or directory source
