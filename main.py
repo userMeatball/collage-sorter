@@ -3,16 +3,18 @@ import cv2 as cv
 import os
 import sys
 
+
+# process images give in src[]
 def process(src):
     print("**********\nIf saved images are not of desired result, play around with threshold and contour area\n**********")
     # declare threshold and contour area for easy manipulation
     threshold = 150 # mask intensity
     con_area = 1000000  # minimum size of contour
 
-    for img in src:
+    for img_path in src:
         # load img
         try:
-            img = cv.imread(img)
+            img = cv.imread(img_path)
         except:
             print("\nERROR: File '", img, "' could not be read!")
 
@@ -25,6 +27,8 @@ def process(src):
         #  get all contours from img
         contours, heirarchy = cv.findContours(mask_inv, cv.RETR_LIST, cv.CHAIN_APPROX_NONE)
 
+        # list of all cropped images
+        processed_img = {}
         # loop through contours
         for i,contour in enumerate(contours):
             if cv.contourArea(contour) > con_area:
@@ -32,41 +36,62 @@ def process(src):
                 x,y,w,h = rect = cv.boundingRect(contour)
 
                 # crop img to contour dimensions
-                cropped = img[y: y+h, x: x+w]
+                img_cropped = img[y: y+h, x: x+w]
 
-                # # define filename and save cropped img
-                # try:
-                #     filename = 'img/' + str(i) + '.' + imgsrc
-                #     print("Saving img: " + filename)
-                #     cv.imwrite(filename, cropped)
-                # except:
-                #     print("The file: '" + filename + "' could not be saved!")
+                # declare filename for the cropped img
+                filename = str(i) + '.jpg'
 
-                # debug
-                cv.imshow('img', cropped)
-                cv.waitKey(0)
-                cv.destroyAllWindows
+                processed_img[filename] = img_cropped
 
-# get src file or directory
-if len(sys.argv) <= 1:
-    print("No arguments provided!")
-    quit()
-src_in = str(sys.argv[1])
-if not os.path.exists(src_in):
-    print("That file or directory could not be found!")
-    quit()
-
-# declare src array, add all src files to array
-src = []
-if os.path.isdir(src_in):
-    for f in os.listdir(src_in):
-        src.append(src_in + '/' + f)
-    print(src)
-else:
-    src.append(src_in)
-    print(src)
+        return processed_img
 
 
-process(src)
+# save files in directory arg, take in cropped: ndarray[] returned by process
+# file structure: root_dir, processed_dir, src_img & processed_imgs
+# root_dir being dir specified by user
+# processed_dir being dir_name of src_img - ext
+# processed_imags being file_name of {path}/i.src_img
+def save(processed_img, save_dir):
+    if not os.path.exists(save_dir):
+        print("ERROR: The directory '" + save_dir + "' could not be found!")
+        quit()
+    
+    for key in processed_img:
+        filename = save_dir + key
+        img = processed_img[key]
+        if not os.path.exists(filename):
+            print("Writing file: " + filename)
+            cv.imwrite(filename, img)
+        else:
+            print("ERROR: The file '" + filename + "' already exists!")
+
+
+if __name__ == "__main__":
+    # get src file or directory
+    if len(sys.argv) < 3:
+        print("Two arguments needed!")
+        print("eg. python main.py ./input/ ./output/")
+        # help
+        quit()
+    src_in = str(sys.argv[1])   # set input source given in arg
+    save_dir = str(sys.argv[2]) # set output directory given in arg
+    if not os.path.exists(src_in):
+        print("The file or directory '" + src_in + "' could not be found!")
+        quit()
+    if not os.path.exists(save_dir):    # create output dir if doesn't exist
+        print("Creating output dir: " + save_dir)
+        os.mkdir(save_dir)
+
+    # declare src array
+    src = []
+    # if src_in is path to directory, loop through files and append to src
+    if os.path.isdir(src_in):   
+        for f in os.listdir(src_in):
+            src.append(src_in + '/' + f)
+    else:
+        src.append(src_in)
+
+    # save cropped images from src_img
+    save(process(src), save_dir)
 
 

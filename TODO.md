@@ -4,7 +4,7 @@
 [x] loop files and process
 
 ###output
-[] set output dir
+[x] set output dir
 [] create new dir of src name - ext
 [] copy src into dir with name .AAA-name (top of list, dot file)
 [] save files into dir
