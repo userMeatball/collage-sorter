@@ -1,4 +1,3 @@
-##App flow
 ###automatic scanner
 add img or directory source
 loop through files in directory or single img

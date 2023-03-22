@@ -1,18 +1,22 @@
-###input
+### thresh_callback 
+[] loop through src array
+
+### input
 [x] add path
 [x] check if path dir or single file
 [x] loop files and process
 
-###output
-[] set output dir
-[] create new dir of src name - ext
-[] copy src into dir with name .AAA-name (top of list, dot file)
-[] save files into dir
+### output
+[x] set output dir
+[x] save files into dir
+[] rotate image and remove background
 
-###process
+### min threshold
+
+### process
 [] could not process that file
 
-###misc
-[] directory input './img/' = './img//photo1.jpg'
+### misc
+[] directory input './img/' = './img//photo1.jpg' - remove '//'
 [] valid input
-[] proper help commands
+[] help commands (argparse module)
